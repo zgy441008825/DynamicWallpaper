@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">DynamicWallpaper</string>
+    <string name="wallpaperSetting">时间动态壁纸</string>
+</resources>
