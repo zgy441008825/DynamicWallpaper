@@ -38,7 +38,7 @@ public class MyWallpaperService extends WallpaperService {
             super.onSurfaceCreated(holder);
             Log.i(TAG, "onSurfaceCreated: " + timeDrawer);
             if (timeDrawer == null) {
-                timeDrawer = new NumberTimeDrawer(holder);
+                timeDrawer = new ClockTimeDrawer(holder);
                 timeDrawer.startDraw();
             }
         }

@@ -10,6 +10,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.DynamicWallpaper">
+        <activity android:name=".WallpaperSettingActivity"></activity>
+
         <service
             android:name=".MyWallpaperService"
             android:enabled="true"
@@ -17,6 +19,7 @@
             <intent-filter>
                 <action android:name="android.service.wallpaper.WallpaperService" />
             </intent-filter>
+
             <meta-data
                 android:name="android.service.wallpaper"
                 android:resource="@xml/wallpaper_config" />

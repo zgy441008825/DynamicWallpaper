@@ -4,21 +4,19 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
 import android.graphics.Shader;
+import android.util.Log;
 
 import org.xutils.common.util.DensityUtil;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers;
-import io.reactivex.rxjava3.core.Flowable;
-import io.reactivex.rxjava3.disposables.Disposable;
-import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class ClockDrawer {
+
+    private static final String TAG = "ClockDrawer";
 
     private final Canvas canvas;
 
@@ -39,8 +37,6 @@ public class ClockDrawer {
 
     private final Paint paint;
 
-    private Disposable runDisposable;
-
     private final int[] colors = new int[]{
             Color.parseColor("#F2AFD0"),
             Color.parseColor("#D784AC"),
@@ -54,26 +50,10 @@ public class ClockDrawer {
         paint.setAntiAlias(true);
         screenWidth = DensityUtil.getScreenWidth();
         screenHeight = DensityUtil.getScreenHeight();
+        Log.i(TAG, "ClockDrawer screenWidth:" + screenWidth + " screenHeight:" + screenHeight);
     }
 
-    public void startDraw() {
-        if (runDisposable != null) {
-            return;
-        }
-        runDisposable = Flowable.interval(1, TimeUnit.SECONDS)
-                .subscribeOn(Schedulers.single())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(aLong -> startDrawClock());
-    }
-
-    public void stopDraw() {
-        if (runDisposable != null) {
-            runDisposable.dispose();
-            runDisposable = null;
-        }
-    }
-
-    private void startDrawClock() {
+    public void update() {
         drawBg();
         drawDial();
         drawTime();
@@ -83,6 +63,7 @@ public class ClockDrawer {
      * 绘制背景
      */
     private void drawBg() {
+        canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
         if (linearGradient == null) {
             float[] positions = new float[]{0f, 0.5f, 0.5f, 1f};
             linearGradient = new LinearGradient(0, 200f, screenWidth, screenHeight - 200f, colors, positions, Shader.TileMode.CLAMP);
@@ -133,6 +114,8 @@ public class ClockDrawer {
         int hour = calendar.get(Calendar.HOUR);
         int minute = calendar.get(Calendar.MINUTE);
         int second = calendar.get(Calendar.SECOND);
+
+        Log.i(TAG, "drawTime hour:" + hour + " minute:" + minute + " second:" + second);
 
         //时针
         paint.setColor(Color.WHITE);

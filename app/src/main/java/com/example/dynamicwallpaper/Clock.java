@@ -7,6 +7,7 @@ import android.graphics.LinearGradient;
 import android.graphics.Paint;
 import android.graphics.Shader;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 
 import androidx.annotation.Nullable;
@@ -23,7 +24,11 @@ import io.reactivex.rxjava3.schedulers.Schedulers;
 
 public class Clock extends View {
 
+    private static final String TAG = "Clock";
+
     private ClockDrawer clockDrawer;
+
+    private Disposable runDisposable;
 
     public Clock(Context context) {
         this(context, null);
@@ -38,11 +43,30 @@ public class Clock extends View {
     }
 
     @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+        startDraw();
+    }
+
+    @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (clockDrawer != null) return;
-        clockDrawer = new ClockDrawer(canvas);
-        clockDrawer.startDraw();
+        Log.i(TAG, "onDraw: " + clockDrawer);
+        if (clockDrawer == null) {
+            clockDrawer = new ClockDrawer(canvas);
+        }
+        clockDrawer.update();
+    }
+
+    private void startDraw() {
+        Log.i(TAG, "startDraw: " + runDisposable);
+        if (runDisposable != null) {
+            return;
+        }
+        runDisposable = Flowable.interval(1, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.single())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(aLong -> postInvalidate());
     }
 
 }
